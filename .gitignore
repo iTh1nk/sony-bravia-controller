@@ -37,3 +37,4 @@ yarn-error.log*
 .env.development
 .env.production
 */temp/
+ci-cd.sh
