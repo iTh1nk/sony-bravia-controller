@@ -1,4 +1,5 @@
 import React from "react";
+import Head from "next/head";
 import styled from "styled-components";
 import tw from "twin.macro";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -13,6 +14,15 @@ interface Props {}
 const Container: React.FunctionComponent<Props> = ({ children }) => {
   return (
     <div className="">
+      <Head>
+        <title>{`Sony Bravia Controller`}</title>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+        <meta
+          name="description"
+          content={`This web controller utility is only for personal use locally!`}
+        />
+      </Head>
       {/* Header Bar */}
       <nav
         className="bg-gray-200 p-5 shadow-md bg-no-repeat bg-cover"
@@ -52,16 +62,7 @@ const Container: React.FunctionComponent<Props> = ({ children }) => {
         </div>
       </nav>
       {/* Content */}
-      <div
-        className="w-full min-h-screen bg-no-repeat bg-cover bg-purple-100"
-        style={
-          {
-            // backgroundImage: "url('/bg.png')",
-            // filter: "blur(3px)",
-            // WebkitFilter: "blur(3px)",
-          }
-        }
-      >
+      <div className="w-full min-h-screen bg-no-repeat bg-cover bg-purple-100">
         {children}
       </div>
       {/* Footer */}
