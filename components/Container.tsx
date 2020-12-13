@@ -40,7 +40,7 @@ const Container: React.FunctionComponent<Props> = ({
           name="description"
           content={`This web controller utility is only for personal use locally!`}
         />
-        <link rel="apple-touch-icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" href="/favsquare.jpg" />
       </Head>
       <Modal
         isModal={isModal}
