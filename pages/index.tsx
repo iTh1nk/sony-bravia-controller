@@ -147,7 +147,7 @@ export default function IndexPage() {
           />
         </div>
         <div className="mt-5">
-          <div className="mb-2">
+          <div className="mb-2 cursor-pointer">
             <Title onClick={() => statusInput()}>- Input</Title>
           </div>
           <Button onClick={() => inputCtl(1)}>
