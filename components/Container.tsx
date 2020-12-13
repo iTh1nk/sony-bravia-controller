@@ -35,12 +35,13 @@ const Container: React.FunctionComponent<Props> = ({
       <Head>
         <title>{`Sony Bravia Controller`}</title>
         <meta charSet="utf-8" />
-        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta
           name="description"
           content={`This web controller utility is only for personal use locally!`}
         />
         <link rel="apple-touch-icon" href="/favicon.ico" />
+        <link rel="manifest" href="/manifest.json" />
       </Head>
       <Modal
         isModal={isModal}
