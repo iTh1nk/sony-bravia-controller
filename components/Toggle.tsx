@@ -3,18 +3,24 @@ import Axios from "axios";
 
 interface Props {
   status: boolean;
-  light: number;
 }
 
-const Toggle: React.FunctionComponent<Props> = ({ status, light }) => {
+const Toggle: React.FunctionComponent<Props> = ({ status }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [toggle, setToggle] = useState<boolean>(status);
 
   const handleOnClick = () => {
     setToggle(!toggle);
-    Axios.put(process.env.REACT_APP_API + "/lights/" + light + "/state", {
-      on: !toggle,
-    })
+    Axios.post(
+      "http://10.0.0.98/sony/system",
+      {
+        method: "setPowerStatus",
+        id: 55,
+        params: [{ status: !toggle }],
+        version: "1.0",
+      },
+      { headers: { "X-Auth-PSK": process.env.NEXT_PUBLIC_KEY } }
+    )
       .then((resp) => {
         // console.log(resp.data);
       })

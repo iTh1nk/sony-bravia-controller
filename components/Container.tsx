@@ -4,14 +4,32 @@ import styled from "styled-components";
 import tw from "twin.macro";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
+import { Modal } from "./Modal";
 
 const HeaderLink = styled.div(() => [
   tw`hover:text-black cursor-pointer ease-in-out duration-300 px-5 font-semibold hidden sm:inline`,
 ]);
 
-interface Props {}
+interface Props {
+  cbIsModal?: any;
+  isModal?: boolean;
+  modalTitle?: string;
+  modalBody?: string;
+  isNotConfirmBtn?: boolean;
+  isNotCancelBtn?: boolean;
+  isNotClose?: boolean;
+}
 
-const Container: React.FunctionComponent<Props> = ({ children }) => {
+const Container: React.FunctionComponent<Props> = ({
+  children,
+  isModal,
+  modalTitle,
+  modalBody,
+  isNotCancelBtn,
+  isNotClose,
+  isNotConfirmBtn,
+  cbIsModal,
+}) => {
   return (
     <div className="">
       <Head>
@@ -23,6 +41,14 @@ const Container: React.FunctionComponent<Props> = ({ children }) => {
           content={`This web controller utility is only for personal use locally!`}
         />
       </Head>
+      <Modal
+        isModal={isModal}
+        title={modalTitle}
+        isNotConfirmBtn={true}
+        cbIsModal={() => cbIsModal()}
+      >
+        {modalBody}
+      </Modal>
       {/* Header Bar */}
       <nav
         className="bg-gray-200 p-5 shadow-md bg-no-repeat bg-cover"
