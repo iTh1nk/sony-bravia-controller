@@ -77,6 +77,7 @@ type StatusState = {
   volumeInfo: Array<VolumeInfo>;
   refresh: boolean;
   isLoading: boolean;
+  loadingBody: string;
 };
 const initialStates: StatusState = {
   isModal: false,
@@ -103,6 +104,7 @@ const initialStates: StatusState = {
   ],
   refresh: false,
   isLoading: true,
+  loadingBody: "TV Offline",
 };
 type StatusAction =
   | { type: "exInSt"; payload: Array<exInStArr> }
@@ -113,7 +115,8 @@ type StatusAction =
   | { type: "systemInfo"; payload: Array<SystemInfo> }
   | { type: "volumeInfo"; payload: Array<VolumeInfo> }
   | { type: "refresh" }
-  | { type: "isLoading"; payload: boolean };
+  | { type: "isLoading"; payload: boolean }
+  | { type: "loadingBody"; payload: string };
 
 function statusReducer(state: StatusState, action: StatusAction) {
   switch (action.type) {
@@ -232,6 +235,7 @@ export default function IndexPage() {
 
   const inputCtl = (port) => {
     dispatch({ type: "isLoading", payload: true });
+    dispatch({ type: "loadingBody", payload: "Changing Source..." });
     Axios.post(
       "http://10.0.0.98/sony/avContent",
       {
@@ -300,6 +304,7 @@ export default function IndexPage() {
   };
   const statusInput = () => {
     dispatch({ type: "isLoading", payload: true });
+    dispatch({ type: "loadingBody", payload: "Getting Input Status..." });
     Axios.post(
       "http://10.0.0.98/sony/avContent",
       {
@@ -320,8 +325,9 @@ export default function IndexPage() {
         console.log(err, err.response);
       });
   };
-  const activeAppCtl = (appURI) => {
+  const activeAppCtl = (appURI, appName) => {
     dispatch({ type: "isLoading", payload: true });
+    dispatch({ type: "loadingBody", payload: `Launching ${appName}` });
     Axios.post(
       "http://10.0.0.98/sony/appControl",
       {
@@ -358,7 +364,7 @@ export default function IndexPage() {
   if (state.isLoading) {
     return (
       <div>
-        <IsLoading />
+        <IsLoading body={state.loadingBody} />
       </div>
     );
   }
@@ -425,7 +431,8 @@ export default function IndexPage() {
               <Button
                 onClick={() =>
                   activeAppCtl(
-                    "com.sony.dtv.com.google.android.youtube.tv.com.google.android.apps.youtube.tv.activity.ShellActivity"
+                    "com.sony.dtv.com.google.android.youtube.tv.com.google.android.apps.youtube.tv.activity.ShellActivity",
+                    "YouTube"
                   )
                 }
               >
@@ -439,7 +446,8 @@ export default function IndexPage() {
               <Button
                 onClick={() =>
                   activeAppCtl(
-                    "com.sony.dtv.com.amazon.amazonvideo.livingroom.com.amazon.ignition.IgnitionActivity"
+                    "com.sony.dtv.com.amazon.amazonvideo.livingroom.com.amazon.ignition.IgnitionActivity",
+                    "PrimeVideo"
                   )
                 }
               >
@@ -454,7 +462,8 @@ export default function IndexPage() {
               <Button
                 onClick={() =>
                   activeAppCtl(
-                    "com.sony.dtv.com.netflix.ninja.com.netflix.ninja.MainActivity"
+                    "com.sony.dtv.com.netflix.ninja.com.netflix.ninja.MainActivity",
+                    "Netflix"
                   )
                 }
               >
@@ -469,7 +478,8 @@ export default function IndexPage() {
               <Button
                 onClick={() =>
                   activeAppCtl(
-                    "com.sony.dtv.com.disney.disneyplus.com.bamtechmedia.dominguez.main.MainActivity"
+                    "com.sony.dtv.com.disney.disneyplus.com.bamtechmedia.dominguez.main.MainActivity",
+                    "Disney+"
                   )
                 }
               >
@@ -484,7 +494,8 @@ export default function IndexPage() {
               <Button
                 onClick={() =>
                   activeAppCtl(
-                    "com.sony.dtv.com.nest.android.com.obsidian.v4.tv.home.TvHomeActivity"
+                    "com.sony.dtv.com.nest.android.com.obsidian.v4.tv.home.TvHomeActivity",
+                    "Nest"
                   )
                 }
               >
