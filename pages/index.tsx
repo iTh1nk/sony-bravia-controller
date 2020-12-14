@@ -5,6 +5,28 @@ import tw from "twin.macro";
 import { useEffect, useReducer } from "react";
 import Axios from "axios";
 import IsLoading from "../components/IsLoading";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faBackward,
+  faChevronDown,
+  faChevronLeft,
+  faChevronRight,
+  faChevronUp,
+  faCircle,
+  faForward,
+  faHome,
+  faKeyboard,
+  faMinus,
+  faPause,
+  faPlay,
+  faPlus,
+  faStepBackward,
+  faStepForward,
+  faUndo,
+  faVolumeMute,
+} from "@fortawesome/free-solid-svg-icons";
+import Image from "next/image";
+import { faSourcetree } from "@fortawesome/free-brands-svg-icons";
 
 const Title = styled.div(() => [
   tw`text-purple-800 font-semibold text-lg mr-2`,
@@ -14,6 +36,7 @@ const Button = styled.button(() => [tw`mx-2 my-1 rounded-sm px-1`]);
 const SubTitleSystemInfo = styled.div(() => [
   tw`text-purple-800 inline-block break-all p-1 ml-2`,
 ]);
+const SubTitlePanel = styled.span(() => [tw`text-purple-800 py-2 px-1`]);
 
 type exInStArr = {
   uri: string;
@@ -252,9 +275,32 @@ export default function IndexPage() {
         console.log(err, err.response);
       });
   };
+  const volumeCtl = (str) => {
+    Axios.post(
+      "http://10.0.0.98/sony/audio",
+      {
+        method: "setAudioVolume",
+        id: 601,
+        params: [
+          {
+            volume: str === "+" ? "+2" : str === "-" ? "-2" : str,
+            target: "speaker",
+          },
+        ],
+        version: "1.0",
+      },
+      { headers: { "X-Auth-PSK": process.env.NEXT_PUBLIC_KEY } }
+    )
+      .then((resp) => {
+        dispatch({ type: "isLoading", payload: false });
+        dispatch({ type: "refresh", payload: !state.refresh });
+      })
+      .catch((err) => {
+        console.log(err, err.response);
+      });
+  };
   const statusInput = () => {
     dispatch({ type: "isLoading", payload: true });
-    dispatch({ type: "refresh", payload: !state.refresh });
     Axios.post(
       "http://10.0.0.98/sony/avContent",
       {
@@ -269,11 +315,39 @@ export default function IndexPage() {
         dispatch({ type: "isLoading", payload: false });
         dispatch({ type: "showModal" });
         dispatch({ type: "exInSt", payload: resp.data.result[0] });
+        dispatch({ type: "refresh", payload: !state.refresh });
       })
       .catch((err) => {
         console.log(err, err.response);
       });
   };
+  const activeAppCtl = (appURI) => {
+    dispatch({ type: "isLoading", payload: true });
+    Axios.post(
+      "http://10.0.0.98/sony/appControl",
+      {
+        method: "setActiveApp",
+        id: 601,
+        params: [
+          {
+            // uri: "localapp://webappruntime?url=http%3A%2F%2Fyoutube.com%2F",
+            uri: appURI,
+          },
+        ],
+        version: "1.0",
+      },
+      { headers: { "X-Auth-PSK": process.env.NEXT_PUBLIC_KEY } }
+    )
+      .then((resp) => {
+        console.log(resp.data.result[0]);
+        dispatch({ type: "isLoading", payload: false });
+        dispatch({ type: "refresh", payload: !state.refresh });
+      })
+      .catch((err) => {
+        console.log(err, err.response);
+      });
+  };
+  const formCtl = () => {};
   // *********************************************************************************************************************
   // *********************************************************************************************************************
   // *********************************************************************************************************************
@@ -297,6 +371,26 @@ export default function IndexPage() {
       isModal={state.isModal}
       cbIsModal={(e) => dispatch({ type: "dismissModal" })}
     >
+      {/* Top Control Icons */}
+      <div className="text-center px-6 pt-6">
+        <FontAwesomeIcon
+          onClick={() => {}}
+          className="mx-3 cursor-pointer text-xl text-purple-800"
+          icon={faHome}
+        />
+        <FontAwesomeIcon
+          onClick={() => {
+            formCtl();
+          }}
+          className="mx-3 cursor-pointer text-xl text-purple-800"
+          icon={faKeyboard}
+        />
+        <FontAwesomeIcon
+          onClick={() => {}}
+          className="mx-3 cursor-pointer text-xl text-purple-800"
+          icon={faSourcetree}
+        />
+      </div>
       {/* Power */}
       <div className="p-6">
         <div className="flex flex-row justify-start items-center">
@@ -311,38 +405,230 @@ export default function IndexPage() {
         {/* Input */}
         <div className="mt-5">
           <div className="mb-2 cursor-pointer">
-            <Title onClick={() => statusInput()}>- Input</Title>
+            <Title onClick={() => statusInput()}>- Source</Title>
           </div>
-          <Button onClick={() => inputCtl(1)}>
-            <SubTitle>HDMI 1</SubTitle>
-          </Button>
-          <Button onClick={() => inputCtl(2)}>
-            <SubTitle>HDMI 2</SubTitle>
-          </Button>
-          <Button onClick={() => inputCtl(3)}>
-            <SubTitle>HDMI 3</SubTitle>
-          </Button>
-          <Button onClick={() => inputCtl(4)}>
-            <SubTitle>HDMI 4</SubTitle>
-          </Button>
-          <Button>
-            <SubTitle>YouTube</SubTitle>
-          </Button>
+          <div className="">
+            <div className="flex items-center justify-center">
+              <Button onClick={() => inputCtl(1)}>
+                <SubTitle>HDMI1</SubTitle>
+              </Button>
+              <Button onClick={() => inputCtl(2)}>
+                <SubTitle>HDMI2</SubTitle>
+              </Button>
+              <Button onClick={() => inputCtl(3)}>
+                <SubTitle>HDMI3</SubTitle>
+              </Button>
+              <Button onClick={() => inputCtl(4)}>
+                <SubTitle>HDMI4</SubTitle>
+              </Button>
+            </div>
+            <div className="flex items-center justify-center">
+              <Button
+                onClick={() =>
+                  activeAppCtl(
+                    "com.sony.dtv.com.google.android.youtube.tv.com.google.android.apps.youtube.tv.activity.ShellActivity"
+                  )
+                }
+              >
+                <Image
+                  width={50}
+                  height={40}
+                  src="http://10.0.0.98/DIAL/icon/com.sony.dtv.com.google.android.youtube.tv.com.google.android.apps.youtube.tv.activity.ShellActivity.png"
+                  alt="YouTube Icon"
+                />
+              </Button>
+              <Button
+                onClick={() =>
+                  activeAppCtl(
+                    "com.sony.dtv.com.amazon.amazonvideo.livingroom.com.amazon.ignition.IgnitionActivity"
+                  )
+                }
+              >
+                <Image
+                  className="rounded-md"
+                  width={40}
+                  height={30}
+                  src="http://10.0.0.98/DIAL/icon/com.sony.dtv.com.amazon.amazonvideo.livingroom.com.amazon.ignition.IgnitionActivity.png"
+                  alt="Prime Video Icon"
+                />
+              </Button>
+              <Button
+                onClick={() =>
+                  activeAppCtl(
+                    "com.sony.dtv.com.netflix.ninja.com.netflix.ninja.MainActivity"
+                  )
+                }
+              >
+                <Image
+                  className="rounded-md"
+                  width={40}
+                  height={30}
+                  src="http://10.0.0.98/DIAL/icon/com.sony.dtv.com.netflix.ninja.com.netflix.ninja.MainActivity.png"
+                  alt="Netflix Icon"
+                />
+              </Button>
+              <Button
+                onClick={() =>
+                  activeAppCtl(
+                    "com.sony.dtv.com.disney.disneyplus.com.bamtechmedia.dominguez.main.MainActivity"
+                  )
+                }
+              >
+                <Image
+                  className="rounded-md"
+                  width={40}
+                  height={30}
+                  src="http://10.0.0.98/DIAL/icon/com.sony.dtv.com.disney.disneyplus.com.bamtechmedia.dominguez.main.MainActivity.png"
+                  alt="Disney+ Icon"
+                />
+              </Button>
+              <Button
+                onClick={() =>
+                  activeAppCtl(
+                    "com.sony.dtv.com.nest.android.com.obsidian.v4.tv.home.TvHomeActivity"
+                  )
+                }
+              >
+                <Image
+                  className="rounded-md"
+                  width={40}
+                  height={30}
+                  src="http://10.0.0.98/DIAL/icon/com.sony.dtv.com.nest.android.com.obsidian.v4.tv.home.TvHomeActivity.png"
+                  alt="Nest Icon"
+                />
+              </Button>
+            </div>
+          </div>
         </div>
         {/* Volume */}
         <div className="mt-5">
           <div className="mb-2">
             <Title>- Volume</Title>
-            <Button onClick={() => muteCtl()}>
-              <SubTitle>Mute</SubTitle>
-            </Button>
-            {JSON.stringify(state.volumeInfo[0].mute)}
+            <div className="flex flex-col justify-center items-center">
+              <div>
+                <Button onClick={() => muteCtl()}>
+                  <SubTitle>
+                    <FontAwesomeIcon
+                      className={`${
+                        state.volumeInfo[0].mute ? `text-red-600` : ``
+                      } text-xl`}
+                      icon={faVolumeMute}
+                    />
+                  </SubTitle>
+                </Button>
+              </div>
+              <div>
+                <Button onClick={() => volumeCtl("+")}>
+                  <SubTitle>
+                    <FontAwesomeIcon className="text-xl" icon={faPlus} />
+                  </SubTitle>
+                </Button>
+                <span>{state.volumeInfo[0].volume}</span>
+                <Button onClick={() => volumeCtl("-")}>
+                  <SubTitle>
+                    <FontAwesomeIcon className="text-xl" icon={faMinus} />
+                  </SubTitle>
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
         {/* Control Panel */}
         <div className="mt-5">
           <div className="mb-2">
             <Title>- Panel</Title>
+          </div>
+          <div className="ml-6 flex flex-col justify-center">
+            <div className="flex justify-center mt-3">
+              <SubTitlePanel>
+                <FontAwesomeIcon
+                  className="mx-12 cursor-pointer"
+                  icon={faPlay}
+                />
+              </SubTitlePanel>
+              <SubTitlePanel>
+                <FontAwesomeIcon
+                  className="mx-12 cursor-pointer"
+                  icon={faPause}
+                />
+              </SubTitlePanel>
+            </div>
+            <div className="flex justify-center mt-3">
+              <SubTitlePanel></SubTitlePanel>
+              <SubTitlePanel>
+                <FontAwesomeIcon
+                  className="text-2xl cursor-pointer"
+                  icon={faChevronUp}
+                />
+              </SubTitlePanel>
+              <SubTitlePanel></SubTitlePanel>
+            </div>
+            <div className="flex justify-center mt-8">
+              <SubTitlePanel>
+                <FontAwesomeIcon
+                  className="text-2xl cursor-pointer"
+                  icon={faChevronLeft}
+                />
+              </SubTitlePanel>
+              <SubTitlePanel>
+                <span className="px-12 text-2xl cursor-pointer">
+                  <FontAwesomeIcon icon={faCircle} />
+                </span>
+              </SubTitlePanel>
+              <SubTitlePanel>
+                <FontAwesomeIcon
+                  className="text-2xl cursor-pointer"
+                  icon={faChevronRight}
+                />
+              </SubTitlePanel>
+            </div>
+            <div className="flex justify-center mt-8">
+              <SubTitlePanel></SubTitlePanel>
+              <SubTitlePanel>
+                <FontAwesomeIcon
+                  className="text-2xl cursor-pointer"
+                  icon={faChevronDown}
+                />
+              </SubTitlePanel>
+              <SubTitlePanel></SubTitlePanel>
+            </div>
+            <div className="flex justify-center mt-3 text-xl">
+              <SubTitlePanel>
+                <FontAwesomeIcon
+                  onClick={() => {}}
+                  className="mx-2 cursor-pointer"
+                  icon={faStepBackward}
+                />
+              </SubTitlePanel>
+              <SubTitlePanel>
+                <FontAwesomeIcon
+                  onClick={() => {}}
+                  className="mx-2 cursor-pointer"
+                  icon={faBackward}
+                />
+              </SubTitlePanel>
+              <SubTitlePanel>
+                <FontAwesomeIcon
+                  onClick={() => {}}
+                  className="mx-6 cursor-pointer"
+                  icon={faUndo}
+                />
+              </SubTitlePanel>
+              <SubTitlePanel>
+                <FontAwesomeIcon
+                  onClick={() => {}}
+                  className="mx-2 cursor-pointer"
+                  icon={faForward}
+                />
+              </SubTitlePanel>
+              <SubTitlePanel>
+                <FontAwesomeIcon
+                  onClick={() => {}}
+                  className="mx-2 cursor-pointer"
+                  icon={faStepForward}
+                />
+              </SubTitlePanel>
+            </div>
           </div>
         </div>
         {/* System Info */}
