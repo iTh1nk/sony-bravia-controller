@@ -429,7 +429,7 @@ export default function IndexPage() {
                   )
                 }
               >
-                <Image
+                <img
                   width={50}
                   height={40}
                   src="http://10.0.0.98/DIAL/icon/com.sony.dtv.com.google.android.youtube.tv.com.google.android.apps.youtube.tv.activity.ShellActivity.png"
@@ -443,7 +443,7 @@ export default function IndexPage() {
                   )
                 }
               >
-                <Image
+                <img
                   className="rounded-md"
                   width={40}
                   height={30}
@@ -458,7 +458,7 @@ export default function IndexPage() {
                   )
                 }
               >
-                <Image
+                <img
                   className="rounded-md"
                   width={40}
                   height={30}
@@ -473,7 +473,7 @@ export default function IndexPage() {
                   )
                 }
               >
-                <Image
+                <img
                   className="rounded-md"
                   width={40}
                   height={30}
@@ -488,7 +488,7 @@ export default function IndexPage() {
                   )
                 }
               >
-                <Image
+                <img
                   className="rounded-md"
                   width={40}
                   height={30}
