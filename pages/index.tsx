@@ -391,7 +391,7 @@ export default function IndexPage() {
         />
       </div>
       {/* Power */}
-      <div className="p-6">
+      <div className="px-6 py-3">
         <div className="flex flex-row justify-start items-center">
           <Title>
             <div className="pr-3">- Power</div>
@@ -402,7 +402,7 @@ export default function IndexPage() {
           />
         </div>
         {/* Input */}
-        <div className="mt-5">
+        <div className="mt-3">
           <div className="mb-2 cursor-pointer">
             <Title onClick={() => statusInput()}>- Source</Title>
           </div>
@@ -500,7 +500,7 @@ export default function IndexPage() {
           </div>
         </div>
         {/* Volume */}
-        <div className="mt-5">
+        <div className="mt-3">
           <div className="mb-2">
             <Title>- Volume</Title>
             <div className="flex flex-col justify-center items-center">
@@ -533,7 +533,7 @@ export default function IndexPage() {
           </div>
         </div>
         {/* Control Panel */}
-        <div className="mt-5">
+        <div className="mt-3">
           <div className="mb-2">
             <Title>- Panel</Title>
           </div>
