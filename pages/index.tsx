@@ -102,7 +102,7 @@ const initialStates: StatusState = {
     { volume: 0, minVolume: 0, mute: false, maxVolume: 100, target: "" },
   ],
   refresh: false,
-  isLoading: false,
+  isLoading: true,
 };
 type StatusAction =
   | { type: "exInSt"; payload: Array<exInStArr> }
