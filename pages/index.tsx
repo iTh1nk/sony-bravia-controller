@@ -543,6 +543,13 @@ export default function IndexPage() {
             </div>
           </div>
         </div>
+        {/* Web */}
+
+        <div className="mt-3">
+          <div className="mb-2">
+            <Title>- Web</Title>
+          </div>
+        </div>
         {/* Control Panel */}
         <div className="mt-3">
           <div className="mb-2">
