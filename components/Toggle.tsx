@@ -30,26 +30,24 @@ const Toggle: React.FunctionComponent<Props> = ({ status }) => {
   };
 
   return (
-    <div>
-      <label
-        onClick={() => handleOnClick()}
-        className="mt-2 inline-flex items-center cursor-pointer"
-      >
-        <span className="relative">
-          <span
-            className={
-              (toggle ? " bg-purple-600 " : " bg-gray-400 ") +
-              "block w-12 h-6 rounded-full shadow-inner duration-300 ease-in-out"
-            }
-          ></span>
-          <span
-            className={
-              (toggle ? " translate-x-6 " : " ") +
-              "transform absolute block w-4 h-4 mt-1 ml-1 bg-white rounded-full shadow inset-y-0 left-0 focus-within:shadow-outline transition-transform duration-300 ease-in-out"
-            }
-          ></span>
-        </span>
-      </label>
+    <div
+      onClick={() => handleOnClick()}
+      className="mt-2 inline-flex items-center cursor-pointer"
+    >
+      <div className="relative z-0">
+        <div
+          className={
+            (toggle ? " bg-purple-600 " : " bg-gray-400 ") +
+            "block w-12 h-6 rounded-full shadow-inner duration-300 ease-in-out"
+          }
+        ></div>
+        <div
+          className={
+            (toggle ? " translate-x-6 " : " ") +
+            "transform absolute block w-4 h-4 mt-1 ml-1 bg-white rounded-full shadow inset-y-0 left-0 focus-within:shadow-outline transition-transform duration-300 ease-in-out"
+          }
+        ></div>
+      </div>
     </div>
   );
 };

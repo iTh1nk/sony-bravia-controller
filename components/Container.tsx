@@ -58,9 +58,9 @@ const Container: React.FunctionComponent<Props> = ({
           backgroundImage: "url('/cat-blur-100.png')",
         }}
       >
-        <div className="max-w-4xl flex justify-between m-auto">
+        <div className=" max-w-4xl flex justify-between m-auto">
           <a href="/">
-            <div className="flex items-center">
+            <div className=" flex items-center">
               <img
                 className="w-8 h-8 sm:w-12 sm:h-12"
                 src="/favicon.ico"
