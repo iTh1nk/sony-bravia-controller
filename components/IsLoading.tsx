@@ -15,9 +15,12 @@ const IsLoading: React.FunctionComponent<Props> = ({ body }) => {
           <span className="cursor-default dark:text-white">
             {body === "" ? (
               "Loading..."
-            ) : body === "TV Offline" ? (
+            ) : body === "Launching..." ? (
               <div className="flex flex-col items-center">
-                <div>{body}</div>
+                <div>
+                  <div className="font-bold">{body}</div>
+                  <div className="text-sm">- Make Sure TV's On -</div>
+                </div>
                 <div>
                   <Link href="/">
                     <a>
