@@ -7,6 +7,7 @@ import Axios from "axios";
 import IsLoading from "../components/IsLoading";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
+  faArrowLeft,
   faBackward,
   faChevronDown,
   faChevronLeft,
@@ -22,11 +23,60 @@ import {
   faPlus,
   faStepBackward,
   faStepForward,
+  faStop,
   faUndo,
   faVolumeMute,
 } from "@fortawesome/free-solid-svg-icons";
-import Image from "next/image";
+import {
+  IRCC_POWER,
+  IRCC_INPUT,
+  IRCC_SYNCMENU,
+  IRCC_HDMI1,
+  IRCC_HDMI2,
+  IRCC_HDMI3,
+  IRCC_HDMI4,
+  IRCC_NUM1,
+  IRCC_NUM2,
+  IRCC_NUM3,
+  IRCC_NUM4,
+  IRCC_NUM5,
+  IRCC_NUM6,
+  IRCC_NUM7,
+  IRCC_NUM8,
+  IRCC_NUM9,
+  IRCC_NUM0,
+  IRCC_DOT,
+  IRCC_CC,
+  IRCC_RED,
+  IRCC_GREEN,
+  IRCC_YELLOW,
+  IRCC_BLUE,
+  IRCC_UP,
+  IRCC_DOWN,
+  IRCC_RIGHT,
+  IRCC_LEFT,
+  IRCC_CONFIRM,
+  IRCC_HELP,
+  IRCC_DISPLAY,
+  IRCC_OPTIONS,
+  IRCC_BACK,
+  IRCC_HOME,
+  IRCC_VOLUP,
+  IRCC_VOLDOWN,
+  IRCC_MUTE,
+  IRCC_AUDIO,
+  IRCC_CHANNELUP,
+  IRCC_CHANNELDOWN,
+  IRCC_PLAY,
+  IRCC_PAUSE,
+  IRCC_STOP,
+  IRCC_FLASHPLUS,
+  IRCC_FLASHMINUS,
+  IRCC_PREV,
+  IRCC_NEXT,
+} from "../data/IRCCCode";
 import { faSourcetree } from "@fortawesome/free-brands-svg-icons";
+import FormTextInput from "../components/FormTextINput";
 
 const Title = styled.div(() => [
   tw`text-purple-800 font-semibold text-lg mr-2`,
@@ -79,6 +129,7 @@ type StatusState = {
   isLoading: boolean;
   loadingBody: string;
   formCtlKeypad: boolean;
+  showSysInfo: boolean;
 };
 const initialStates: StatusState = {
   isModal: false,
@@ -107,6 +158,7 @@ const initialStates: StatusState = {
   isLoading: true,
   loadingBody: "Launching...",
   formCtlKeypad: false,
+  showSysInfo: false,
 };
 type StatusAction =
   | { type: "exInSt"; payload: Array<exInStArr> }
@@ -119,7 +171,8 @@ type StatusAction =
   | { type: "refresh" }
   | { type: "isLoading"; payload: boolean }
   | { type: "loadingBody"; payload: string }
-  | { type: "formCtlKeypad"; payload: boolean };
+  | { type: "formCtlKeypad"; payload: boolean }
+  | { type: "showSysInfo" };
 
 function statusReducer(state: StatusState, action: StatusAction) {
   switch (action.type) {
@@ -178,6 +231,11 @@ function statusReducer(state: StatusState, action: StatusAction) {
       return {
         ...state,
         formCtlKeypad: action.payload,
+      };
+    case "showSysInfo":
+      return {
+        ...state,
+        showSysInfo: !state.showSysInfo,
       };
   }
 }
@@ -365,29 +423,6 @@ export default function IndexPage() {
         console.log(err, err.response);
       });
   };
-  const formCtlSubmit = () => {
-    dispatch({ type: "isLoading", payload: true });
-    dispatch({ type: "loadingBody", payload: "Launching Keypad..." });
-    Axios.post(
-      "http://10.0.0.98/sony/appControl",
-      {
-        method: "setTextForm",
-        id: 601,
-        params: ["Helloasdfasdf TV"],
-        version: "1.0",
-      },
-      { headers: { "X-Auth-PSK": process.env.NEXT_PUBLIC_KEY } }
-    )
-      .then((resp) => {
-        dispatch({ type: "formCtlKeypad", payload: false });
-        dispatch({ type: "isLoading", payload: false });
-        dispatch({ type: "refresh" });
-      })
-      .catch((err) => {
-        dispatch({ type: "isLoading", payload: false });
-        console.log(err, err.response);
-      });
-  };
 
   const funcIRCC = (code) => {
     const headers = {
@@ -410,7 +445,7 @@ export default function IndexPage() {
       headers: headers,
     })
       .then((resp) => {
-        console.log(resp);
+        // console.log(resp);
       })
       .catch((err) => {
         console.log(err, err.response);
@@ -435,7 +470,7 @@ export default function IndexPage() {
   return (
     <div className="">
       {/* Text Input Modal */}
-      <div
+      {/* <div
         className={`${
           state.formCtlKeypad ? `z-10 opacity-95` : `z-0 opacity-0`
         } absolute text-xl w-full h-full bg-gray-500 duration-500`}
@@ -465,7 +500,12 @@ export default function IndexPage() {
             </form>
           </div>
         </div>
-      </div>
+      </div> */}
+        <FormTextInput
+          formCtlKeypad={state.formCtlKeypad}
+          // cbFormCtlSubmit={() => formCtlSubmit()}
+          cbFormCtlKeypad={() => dispatch({ type: "formCtlKeypad", payload: false })}
+        />
       {/* Main Body */}
       <div className="opacity-95">
         <Container
@@ -478,7 +518,7 @@ export default function IndexPage() {
           <div className="text-center px-6 pt-6">
             <FontAwesomeIcon
               onClick={() => {
-                funcIRCC("AAAAAQAAAAEAAABgAw==");
+                funcIRCC(IRCC_HOME);
               }}
               className="mx-3 cursor-pointer text-xl text-purple-800"
               icon={faHome}
@@ -657,18 +697,27 @@ export default function IndexPage() {
               <div className="mb-2">
                 <Title>- Panel</Title>
               </div>
-              <div className="ml-6 flex flex-col justify-center">
+              <div className="ml-5 flex flex-col justify-center">
                 <div className="flex justify-center mt-3">
                   <SubTitlePanel>
                     <FontAwesomeIcon
-                      className="mx-12 cursor-pointer"
+                      onClick={() => funcIRCC(IRCC_PLAY)}
+                      className="mx-8 cursor-pointer"
                       icon={faPlay}
                     />
                   </SubTitlePanel>
                   <SubTitlePanel>
                     <FontAwesomeIcon
-                      className="mx-12 cursor-pointer"
+                      onClick={() => funcIRCC(IRCC_PAUSE)}
+                      className="mx-8 cursor-pointer"
                       icon={faPause}
+                    />
+                  </SubTitlePanel>
+                  <SubTitlePanel>
+                    <FontAwesomeIcon
+                      onClick={() => funcIRCC(IRCC_STOP)}
+                      className="mx-8 cursor-pointer"
+                      icon={faStop}
                     />
                   </SubTitlePanel>
                 </div>
@@ -676,6 +725,7 @@ export default function IndexPage() {
                   <SubTitlePanel></SubTitlePanel>
                   <SubTitlePanel>
                     <FontAwesomeIcon
+                      onClick={() => funcIRCC(IRCC_UP)}
                       className="text-2xl cursor-pointer"
                       icon={faChevronUp}
                     />
@@ -685,17 +735,22 @@ export default function IndexPage() {
                 <div className="flex justify-center mt-8">
                   <SubTitlePanel>
                     <FontAwesomeIcon
+                      onClick={() => funcIRCC(IRCC_LEFT)}
                       className="text-2xl cursor-pointer"
                       icon={faChevronLeft}
                     />
                   </SubTitlePanel>
                   <SubTitlePanel>
-                    <span className="px-12 text-2xl cursor-pointer">
-                      <FontAwesomeIcon icon={faCircle} />
+                    <span className="mx-12 text-2xl cursor-pointer">
+                      <FontAwesomeIcon
+                        onClick={() => funcIRCC(IRCC_CONFIRM)}
+                        icon={faCircle}
+                      />
                     </span>
                   </SubTitlePanel>
                   <SubTitlePanel>
                     <FontAwesomeIcon
+                      onClick={() => funcIRCC(IRCC_RIGHT)}
                       className="text-2xl cursor-pointer"
                       icon={faChevronRight}
                     />
@@ -705,6 +760,7 @@ export default function IndexPage() {
                   <SubTitlePanel></SubTitlePanel>
                   <SubTitlePanel>
                     <FontAwesomeIcon
+                      onClick={() => funcIRCC(IRCC_DOWN)}
                       className="text-2xl cursor-pointer"
                       icon={faChevronDown}
                     />
@@ -714,36 +770,42 @@ export default function IndexPage() {
                 <div className="flex justify-center mt-3 text-xl">
                   <SubTitlePanel>
                     <FontAwesomeIcon
-                      onClick={() => {}}
-                      className="mx-2 cursor-pointer"
+                      onClick={() => {
+                        funcIRCC(IRCC_PREV);
+                      }}
+                      className="mx-8 cursor-pointer"
                       icon={faStepBackward}
                     />
                   </SubTitlePanel>
-                  <SubTitlePanel>
+                  {/* <SubTitlePanel>
                     <FontAwesomeIcon
                       onClick={() => {}}
                       className="mx-2 cursor-pointer"
                       icon={faBackward}
                     />
-                  </SubTitlePanel>
+                  </SubTitlePanel> */}
                   <SubTitlePanel>
                     <FontAwesomeIcon
-                      onClick={() => {}}
-                      className="mx-6 cursor-pointer"
-                      icon={faUndo}
+                      onClick={() => {
+                        funcIRCC(IRCC_BACK);
+                      }}
+                      className="mx-8 cursor-pointer"
+                      icon={faArrowLeft}
                     />
                   </SubTitlePanel>
-                  <SubTitlePanel>
+                  {/* <SubTitlePanel>
                     <FontAwesomeIcon
                       onClick={() => {}}
                       className="mx-2 cursor-pointer"
                       icon={faForward}
                     />
-                  </SubTitlePanel>
+                  </SubTitlePanel> */}
                   <SubTitlePanel>
                     <FontAwesomeIcon
-                      onClick={() => {}}
-                      className="mx-2 cursor-pointer"
+                      onClick={() => {
+                        funcIRCC(IRCC_NEXT);
+                      }}
+                      className="mx-8 cursor-pointer"
                       icon={faStepForward}
                     />
                   </SubTitlePanel>
@@ -753,24 +815,33 @@ export default function IndexPage() {
             {/* System Info */}
             <div className="mt-5">
               <div className="mb-2">
-                <Title>System Info</Title>
-                {Object.keys(state.systemInfo[0])?.map((item, idx) => (
-                  <div key={idx}>
-                    <SubTitleSystemInfo key={idx}>
-                      {item.toUpperCase()}:{" "}
-                    </SubTitleSystemInfo>
-                    {Object.values(state.systemInfo[0])?.map(
-                      (itemSub, idxSub) =>
-                        idx !== idxSub ? null : (
-                          <div key={idxSub} className="inline-block">
-                            <SubTitleSystemInfo>
-                              <span className="underline">{itemSub}</span>
-                            </SubTitleSystemInfo>
-                          </div>
-                        )
-                    )}
-                  </div>
-                ))}
+                <Title>
+                  <span
+                    onClick={() => dispatch({ type: "showSysInfo" })}
+                    className="cursor-pointer border-b border-purple-800"
+                  >
+                    System Info
+                  </span>
+                </Title>
+                {state.showSysInfo
+                  ? Object.keys(state.systemInfo[0])?.map((item, idx) => (
+                      <div key={idx}>
+                        <SubTitleSystemInfo key={idx}>
+                          {item.toUpperCase()}:{" "}
+                        </SubTitleSystemInfo>
+                        {Object.values(state.systemInfo[0])?.map(
+                          (itemSub, idxSub) =>
+                            idx !== idxSub ? null : (
+                              <div key={idxSub} className="inline-block">
+                                <SubTitleSystemInfo>
+                                  <span className="underline">{itemSub}</span>
+                                </SubTitleSystemInfo>
+                              </div>
+                            )
+                        )}
+                      </div>
+                    ))
+                  : null}
               </div>
             </div>
           </div>
