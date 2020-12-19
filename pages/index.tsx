@@ -8,6 +8,7 @@ import IsLoading from "../components/IsLoading";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowLeft,
+  faAsterisk,
   faBackward,
   faChevronDown,
   faChevronLeft,
@@ -21,6 +22,7 @@ import {
   faPause,
   faPlay,
   faPlus,
+  faSlash,
   faStepBackward,
   faStepForward,
   faStop,
@@ -77,6 +79,7 @@ import {
 } from "../data/IRCCCode";
 import { faSourcetree } from "@fortawesome/free-brands-svg-icons";
 import FormTextInput from "../components/TextInput";
+import Connection from "../components/Connection";
 
 const Title = styled.div(() => [
   tw`text-purple-800 font-semibold text-lg mr-2`,
@@ -130,6 +133,11 @@ type StatusState = {
   loadingBody: string;
   formCtlKeypad: boolean;
   showSysInfo: boolean;
+  connectionInfo: {
+    addr: string;
+    key: string;
+    show: boolean;
+  };
 };
 const initialStates: StatusState = {
   isModal: false,
@@ -159,6 +167,11 @@ const initialStates: StatusState = {
   loadingBody: "Launching...",
   formCtlKeypad: false,
   showSysInfo: false,
+  connectionInfo: {
+    addr: "",
+    key: "",
+    show: false,
+  },
 };
 type StatusAction =
   | { type: "exInSt"; payload: Array<exInStArr> }
@@ -172,7 +185,11 @@ type StatusAction =
   | { type: "isLoading"; payload: boolean }
   | { type: "loadingBody"; payload: string }
   | { type: "formCtlKeypad"; payload: boolean }
-  | { type: "showSysInfo" };
+  | { type: "showSysInfo" }
+  | {
+      type: "connectionInfo";
+      payload: { addr: string; key: string; show: boolean };
+    };
 
 function statusReducer(state: StatusState, action: StatusAction) {
   switch (action.type) {
@@ -237,6 +254,15 @@ function statusReducer(state: StatusState, action: StatusAction) {
         ...state,
         showSysInfo: !state.showSysInfo,
       };
+    case "connectionInfo":
+      return {
+        ...state,
+        connectionInfo: {
+          addr: action.payload.addr,
+          key: action.payload.key,
+          show: action.payload.show,
+        },
+      };
   }
 }
 
@@ -300,6 +326,10 @@ export default function IndexPage() {
         })
       )
       .catch((errors) => {
+        dispatch({
+          type: "connectionInfo",
+          payload: { ...state.connectionInfo, show: true },
+        });
         console.log(errors);
       });
   }, [state.refresh]);
@@ -470,42 +500,12 @@ export default function IndexPage() {
   return (
     <div className="">
       {/* Text Input Modal */}
-      {/* <div
-        className={`${
-          state.formCtlKeypad ? `z-10 opacity-95` : `z-0 opacity-0`
-        } absolute text-xl w-full h-full bg-gray-500 duration-500`}
-      >
-        <div className="flex justify-center mt-32">
-          <div>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                formCtlSubmit();
-              }}
-            >
-              <input defaultValue="Hello" id="formCtl" />
-              <br />
-              <button className="m-3 bg-blue-300 p-1 rounded-sm" type="submit">
-                Submit
-              </button>
-              <button
-                onClick={() =>
-                  dispatch({ type: "formCtlKeypad", payload: false })
-                }
-                className="m-3 bg-blue-300 p-1 rounded-sm"
-                type="button"
-              >
-                Dismiss
-              </button>
-            </form>
-          </div>
-        </div>
-      </div> */}
-        <FormTextInput
-          formCtlKeypad={state.formCtlKeypad}
-          // cbFormCtlSubmit={() => formCtlSubmit()}
-          cbFormCtlKeypad={() => dispatch({ type: "formCtlKeypad", payload: false })}
-        />
+      <FormTextInput
+        formCtlKeypad={state.formCtlKeypad}
+        cbFormCtlKeypad={() =>
+          dispatch({ type: "formCtlKeypad", payload: false })
+        }
+      />
       {/* Main Body */}
       <div className="opacity-95">
         <Container
@@ -514,6 +514,22 @@ export default function IndexPage() {
           isModal={state.isModal}
           cbIsModal={(e) => dispatch({ type: "dismissModal" })}
         >
+          {/* Connection Status Bar */}
+          <Connection
+            show={state.connectionInfo.show}
+            cbShow={() =>
+              dispatch({
+                type: "connectionInfo",
+                payload: { ...state.connectionInfo, show: true },
+              })
+            }
+            cbDismiss={() =>
+              dispatch({
+                type: "connectionInfo",
+                payload: { ...state.connectionInfo, show: false },
+              })
+            }
+          />
           {/* Top Control Icons */}
           <div className="text-center px-6 pt-6">
             <FontAwesomeIcon
