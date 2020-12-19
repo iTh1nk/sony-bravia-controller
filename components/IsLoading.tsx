@@ -35,9 +35,9 @@ const IsLoading: React.FunctionComponent<Props> = ({ body }) => {
                 </div>
                 <div>
                   <Link href="/">
-                    <a>
+                    <a className="text-sm">
                       <FontAwesomeIcon
-                        className="text-sm m-3 hover:rotate-90 duration-500 transform"
+                        className="m-3 hover:rotate-90 duration-500 transform"
                         icon={faSync}
                       />
                     </a>

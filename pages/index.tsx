@@ -76,7 +76,7 @@ import {
   IRCC_NEXT,
 } from "../data/IRCCCode";
 import { faSourcetree } from "@fortawesome/free-brands-svg-icons";
-import FormTextInput from "../components/FormTextInput";
+import FormTextInput from "../components/TextInput";
 
 const Title = styled.div(() => [
   tw`text-purple-800 font-semibold text-lg mr-2`,
