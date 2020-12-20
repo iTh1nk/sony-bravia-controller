@@ -7,6 +7,8 @@ import Axios from "axios";
 import IsLoading from "../components/IsLoading";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
+  faArrowAltCircleLeft,
+  faArrowCircleLeft,
   faArrowLeft,
   faAsterisk,
   faBackward,
@@ -589,7 +591,7 @@ export default function IndexPage() {
           </div>
           {/* Power */}
           <div className="z-0 px-6 py-3">
-            <div className="z-0 flex flex-row justify-start items-center">
+            <div className="z-0 flex flex-row justify-center items-center">
               <Title>
                 <div className="pr-3">Power</div>
               </Title>
@@ -759,15 +761,11 @@ export default function IndexPage() {
             {/* Web */}
 
             <div className="mt-3">
-              <div className="mb-2">
-                {/* <Title>- Web</Title> */}
-              </div>
+              <div className="mb-2">{/* <Title>- Web</Title> */}</div>
             </div>
             {/* Control Panel */}
             <div className="mt-3">
-              <div className="mb-2">
-                {/* <Title>- Panel</Title> */}
-              </div>
+              <div className="mb-2">{/* <Title>- Panel</Title> */}</div>
               <div className="ml-5 flex flex-col justify-center">
                 <div className="flex justify-center mt-3">
                   <SubTitlePanel>
@@ -861,7 +859,7 @@ export default function IndexPage() {
                         funcIRCC(IRCC_BACK);
                       }}
                       className="mx-8 cursor-pointer"
-                      icon={faArrowLeft}
+                      icon={faArrowCircleLeft}
                     />
                   </SubTitlePanel>
                   {/* <SubTitlePanel>
@@ -888,7 +886,9 @@ export default function IndexPage() {
               <div className="mb-2">
                 <Title>
                   <span
-                    onClick={() => dispatch({ type: "showSysInfo" })}
+                    onClick={() => {
+                      dispatch({ type: "showSysInfo" });
+                    }}
                     className="cursor-pointer border-b border-purple-800"
                   >
                     System Info
