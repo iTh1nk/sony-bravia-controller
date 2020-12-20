@@ -541,7 +541,7 @@ export default function IndexPage() {
                 payload: { ...state.connectionInfo, show: true },
               })
             }
-            className="text-left px-6 pt-5 items-center flex justify-center"
+            className="text-left px-6 pt-2 items-center flex justify-center"
           >
             {state.connectionInfo.pass ? (
               <div className="flex justify-center items-center">
@@ -566,7 +566,7 @@ export default function IndexPage() {
             )}
           </div>
           {/* Top Control Icons */}
-          <div className="text-center px-6 pt-6">
+          <div className="text-center px-6 pt-3">
             <FontAwesomeIcon
               onClick={() => {
                 funcIRCC(IRCC_HOME);
