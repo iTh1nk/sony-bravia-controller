@@ -591,7 +591,7 @@ export default function IndexPage() {
           <div className="z-0 px-6 py-3">
             <div className="z-0 flex flex-row justify-start items-center">
               <Title>
-                <div className="pr-3">- Power</div>
+                <div className="pr-3">Power</div>
               </Title>
               <div className="z-0">
                 <Toggle
@@ -603,7 +603,7 @@ export default function IndexPage() {
             {/* Input */}
             <div className="mt-3">
               <div className="mb-2 cursor-pointer">
-                <Title>- Source</Title>
+                {/* <Title>- Source</Title> */}
               </div>
               <div className="">
                 <div className="flex items-center justify-center">
@@ -726,7 +726,7 @@ export default function IndexPage() {
             {/* Volume */}
             <div className="mt-3">
               <div className="mb-2">
-                <Title>- Volume</Title>
+                {/* <Title>- Volume</Title> */}
                 <div className="flex flex-col justify-center items-center">
                   <div>
                     <Button onClick={() => muteCtl()}>
@@ -760,13 +760,13 @@ export default function IndexPage() {
 
             <div className="mt-3">
               <div className="mb-2">
-                <Title>- Web</Title>
+                {/* <Title>- Web</Title> */}
               </div>
             </div>
             {/* Control Panel */}
             <div className="mt-3">
               <div className="mb-2">
-                <Title>- Panel</Title>
+                {/* <Title>- Panel</Title> */}
               </div>
               <div className="ml-5 flex flex-col justify-center">
                 <div className="flex justify-center mt-3">

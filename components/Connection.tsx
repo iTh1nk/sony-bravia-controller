@@ -1,11 +1,16 @@
-import { faCircle } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCircle,
+  faCircleNotch,
+  faSpinner,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Axios from "axios";
 import React, { useState } from "react";
 
 interface Props {
   show: boolean;
-  cbDismiss: any;
+  cbDismiss?: any;
+  isDismiss?: boolean;
 }
 
 type ConnectionInput = {
@@ -13,15 +18,22 @@ type ConnectionInput = {
   key: string;
 };
 
-const Connection: React.FunctionComponent<Props> = ({ show, cbDismiss }) => {
+const Connection: React.FunctionComponent<Props> = ({
+  show,
+  cbDismiss,
+  isDismiss = true,
+}) => {
   const [connectionInput, setConnectionInput] = useState<ConnectionInput>({
     addr: "",
     key: "",
   });
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const onSubmit = () => {
+    setIsLoading(true);
     localStorage.setItem("addr", connectionInput.addr);
     localStorage.setItem("key", connectionInput.key);
+    location.reload();
   };
 
   return (
@@ -35,7 +47,7 @@ const Connection: React.FunctionComponent<Props> = ({ show, cbDismiss }) => {
         <div className="flex justify-center mt-32">
           <div className="">
             <form>
-              <div className="flex justify-center flex-col mb-8">
+              <div className="flex justify-center flex-col mb-8 text-sm">
                 <input
                   onChange={(e) => {
                     setConnectionInput({
@@ -43,7 +55,7 @@ const Connection: React.FunctionComponent<Props> = ({ show, cbDismiss }) => {
                       addr: e.target.value,
                     });
                   }}
-                  className="rounded-md m-2 py-1 px-2"
+                  className="rounded-md m-2 py-2 px-2"
                   placeholder="10.0.0.1"
                 />
                 <input
@@ -53,7 +65,7 @@ const Connection: React.FunctionComponent<Props> = ({ show, cbDismiss }) => {
                       key: e.target.value,
                     });
                   }}
-                  className="rounded-md m-2 py-1 px-2"
+                  className="rounded-md m-2 py-2 px-2"
                   placeholder="Key"
                 />
               </div>
@@ -73,10 +85,19 @@ const Connection: React.FunctionComponent<Props> = ({ show, cbDismiss }) => {
                   type="button"
                 >
                   Confirm
+                  <span className={isLoading ? `` : `hidden`}>
+                    <FontAwesomeIcon
+                      className="animate-spin ml-2"
+                      icon={faCircleNotch}
+                    />
+                  </span>
                 </button>
                 <button
                   onClick={() => cbDismiss()}
-                  className="inline-flex justify-center w-full rounded-md border border-gray-700 px-4 py-2 bg-gray-800 text-base leading-6 font-medium text-gray-400 shadow-sm transition duration-500 ease-in-out hover:text-white hover:bg-black focus:outline-none focus:border-gray-400 focus:shadow-outline-blue sm:text-sm sm:leading-5"
+                  className={
+                    (isDismiss ? "" : "hidden") +
+                    " inline-flex justify-center w-full rounded-md border border-gray-700 px-4 py-2 bg-gray-800 text-base leading-6 font-medium text-gray-400 shadow-sm transition duration-500 ease-in-out hover:text-white hover:bg-black focus:outline-none focus:border-gray-400 focus:shadow-outline-blue sm:text-sm sm:leading-5"
+                  }
                   type="button"
                 >
                   Dismiss

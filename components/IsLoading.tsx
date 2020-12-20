@@ -1,14 +1,42 @@
-import { faSync } from "@fortawesome/free-solid-svg-icons";
+import { faKeyboard, faSync } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import Head from "next/head";
+import Connection from "./Connection";
+import Axios from "axios";
 
 interface Props {
   body?: string;
 }
 
 const IsLoading: React.FunctionComponent<Props> = ({ body }) => {
+  const [showConnectionField, setShowConnectionField] = useState<boolean>(
+    false
+  );
+  const [count, setCount] = useState<number>(0);
+  const setPower = () => {
+    if (count === 5) {
+      Axios.post(
+        "http://" + localStorage.getItem("addr") + "/sony/system",
+        {
+          method: "setPowerStatus",
+          id: 55,
+          params: [{ status: true }],
+          version: "1.0",
+        },
+        { headers: { "X-Auth-PSK": localStorage.getItem("key") } }
+      )
+        .then((resp) => {
+          location.reload();
+          // console.log(resp.data);
+        })
+        .catch((err) => {
+          console.log(err, err.response);
+        });
+    }
+  };
+
   return (
     <>
       <Head>
@@ -22,6 +50,7 @@ const IsLoading: React.FunctionComponent<Props> = ({ body }) => {
         <link rel="apple-touch-icon" href="/favicon.ico" />
         <link rel="manifest" href="/manifest.json" />
       </Head>
+      <Connection show={showConnectionField} isDismiss={false} />
       <div className="w-screen h-screen flex justify-center items-center transition ease-in-out duration-500 transform dark:bg-black">
         <span className="font-mono text-3xl animate-pulse">
           <span className="cursor-default dark:text-white">
@@ -31,17 +60,20 @@ const IsLoading: React.FunctionComponent<Props> = ({ body }) => {
               <div className="flex flex-col items-center">
                 <div>
                   <div className="font-bold">{body}</div>
-                  <div className="text-sm">- Make Sure TV's On -</div>
+                  <div className="text-sm">
+                    - Make Sure TV's On{" "}
+                    <span
+                      onClick={() => {
+                        setCount((pre) => pre + 1);
+                        setPower();
+                      }}
+                    >
+                      -
+                    </span>
+                  </div>
                 </div>
-                <div>
-                  <Link href="/">
-                    <a className="text-sm">
-                      <FontAwesomeIcon
-                        className="m-3 hover:rotate-90 duration-500 transform"
-                        icon={faSync}
-                      />
-                    </a>
-                  </Link>
+                <div onClick={() => setShowConnectionField(true)}>
+                  <FontAwesomeIcon className="m-3" icon={faKeyboard} />
                 </div>
               </div>
             ) : (
