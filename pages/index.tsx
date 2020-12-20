@@ -137,6 +137,7 @@ type StatusState = {
     addr: string;
     key: string;
     show: boolean;
+    pass: boolean;
   };
 };
 const initialStates: StatusState = {
@@ -171,6 +172,7 @@ const initialStates: StatusState = {
     addr: "",
     key: "",
     show: false,
+    pass: false,
   },
 };
 type StatusAction =
@@ -188,7 +190,7 @@ type StatusAction =
   | { type: "showSysInfo" }
   | {
       type: "connectionInfo";
-      payload: { addr: string; key: string; show: boolean };
+      payload: { addr: string; key: string; show: boolean; pass: boolean };
     };
 
 function statusReducer(state: StatusState, action: StatusAction) {
@@ -261,6 +263,7 @@ function statusReducer(state: StatusState, action: StatusAction) {
           addr: action.payload.addr,
           key: action.payload.key,
           show: action.payload.show,
+          pass: action.payload.pass,
         },
       };
   }
@@ -272,48 +275,52 @@ export default function IndexPage() {
   useEffect(() => {
     Axios.all([
       Axios.post(
-        "http://10.0.0.98/sony/avContent",
+        "http://" + localStorage.getItem("addr") + "/sony/avContent",
         {
           method: "getSourceList",
           id: 1,
           params: [{ scheme: "extInput" }],
           version: "1.0",
         },
-        { headers: { "X-Auth-PSK": process.env.NEXT_PUBLIC_KEY } }
+        { headers: { "X-Auth-PSK": localStorage.getItem("key") } }
       ),
       Axios.post(
-        "http://10.0.0.98/sony/system",
+        "http://" + localStorage.getItem("addr") + "/sony/system",
         {
           method: "getSystemInformation",
           id: 33,
           params: [],
           version: "1.0",
         },
-        { headers: { "X-Auth-PSK": process.env.NEXT_PUBLIC_KEY } }
+        { headers: { "X-Auth-PSK": localStorage.getItem("key") } }
       ),
       Axios.post(
-        "http://10.0.0.98/sony/system",
+        "http://" + localStorage.getItem("addr") + "/sony/system",
         {
           method: "getPowerStatus",
           id: 50,
           params: [],
           version: "1.0",
         },
-        { headers: { "X-Auth-PSK": process.env.NEXT_PUBLIC_KEY } }
+        { headers: { "X-Auth-PSK": localStorage.getItem("key") } }
       ),
       Axios.post(
-        "http://10.0.0.98/sony/audio",
+        "http://" + localStorage.getItem("addr") + "/sony/audio",
         {
           method: "getVolumeInformation",
           id: 33,
           params: [],
           version: "1.0",
         },
-        { headers: { "X-Auth-PSK": process.env.NEXT_PUBLIC_KEY } }
+        { headers: { "X-Auth-PSK": localStorage.getItem("key") } }
       ),
     ])
       .then(
         Axios.spread((...resp) => {
+          dispatch({
+            type: "connectionInfo",
+            payload: { ...state.connectionInfo, pass: true },
+          });
           dispatch({ type: "sourceList", payload: resp[0].data.result[0] });
           dispatch({ type: "systemInfo", payload: resp[1].data.result });
           dispatch({
@@ -328,7 +335,7 @@ export default function IndexPage() {
       .catch((errors) => {
         dispatch({
           type: "connectionInfo",
-          payload: { ...state.connectionInfo, show: true },
+          payload: { ...state.connectionInfo, show: true, pass: false },
         });
         console.log(errors);
       });
@@ -338,7 +345,7 @@ export default function IndexPage() {
     dispatch({ type: "isLoading", payload: true });
     dispatch({ type: "loadingBody", payload: "Changing Source..." });
     Axios.post(
-      "http://10.0.0.98/sony/avContent",
+      "http://" + localStorage.getItem("addr") + "/sony/avContent",
       {
         method: "setPlayContent",
         version: "1.0",
@@ -349,7 +356,7 @@ export default function IndexPage() {
           },
         ],
       },
-      { headers: { "X-Auth-PSK": process.env.NEXT_PUBLIC_KEY } }
+      { headers: { "X-Auth-PSK": localStorage.getItem("key") } }
     )
       .then((resp) => {
         dispatch({ type: "isLoading", payload: false });
@@ -362,14 +369,14 @@ export default function IndexPage() {
   };
   const muteCtl = () => {
     Axios.post(
-      "http://10.0.0.98/sony/audio",
+      "http://" + localStorage.getItem("addr") + "/sony/audio",
       {
         method: "setAudioMute",
         id: 601,
         params: [{ status: !state.volumeInfo[0].mute }],
         version: "1.0",
       },
-      { headers: { "X-Auth-PSK": process.env.NEXT_PUBLIC_KEY } }
+      { headers: { "X-Auth-PSK": localStorage.getItem("key") } }
     )
       .then((resp) => {
         dispatch({ type: "isLoading", payload: false });
@@ -381,7 +388,7 @@ export default function IndexPage() {
   };
   const volumeCtl = (str) => {
     Axios.post(
-      "http://10.0.0.98/sony/audio",
+      "http://" + localStorage.getItem("addr") + "/sony/audio",
       {
         method: "setAudioVolume",
         id: 601,
@@ -393,7 +400,7 @@ export default function IndexPage() {
         ],
         version: "1.0",
       },
-      { headers: { "X-Auth-PSK": process.env.NEXT_PUBLIC_KEY } }
+      { headers: { "X-Auth-PSK": localStorage.getItem("key") } }
     )
       .then((resp) => {
         dispatch({ type: "isLoading", payload: false });
@@ -407,14 +414,14 @@ export default function IndexPage() {
   //   dispatch({ type: "isLoading", payload: true });
   //   dispatch({ type: "loadingBody", payload: "Getting Input Status..." });
   //   Axios.post(
-  //     "http://10.0.0.98/sony/avContent",
+  //     "http://" + localStorage.getItem("addr") + "/sony/avContent",
   //     {
   //       method: "getCurrentExternalInputsStatus",
   //       id: 105,
   //       params: [],
   //       version: "1.0",
   //     },
-  //     { headers: { "X-Auth-PSK": process.env.NEXT_PUBLIC_KEY } }
+  //     { headers: { "X-Auth-PSK": localStorage.getItem("key") } }
   //   )
   //     .then((resp) => {
   //       dispatch({ type: "isLoading", payload: false });
@@ -430,7 +437,7 @@ export default function IndexPage() {
     dispatch({ type: "isLoading", payload: true });
     dispatch({ type: "loadingBody", payload: `Launching ${appName}` });
     Axios.post(
-      "http://10.0.0.98/sony/appControl",
+      "http://" + localStorage.getItem("addr") + "/sony/appControl",
       {
         method: "setActiveApp",
         id: 601,
@@ -442,7 +449,7 @@ export default function IndexPage() {
         ],
         version: "1.0",
       },
-      { headers: { "X-Auth-PSK": process.env.NEXT_PUBLIC_KEY } }
+      { headers: { "X-Auth-PSK": localStorage.getItem("key") } }
     )
       .then((resp) => {
         console.log(resp.data.result[0]);
@@ -457,7 +464,7 @@ export default function IndexPage() {
   const funcIRCC = (code) => {
     const headers = {
       "Content-Type": "text/xml; charset=UTF-8",
-      "X-Auth-PSK": process.env.NEXT_PUBLIC_KEY,
+      "X-Auth-PSK": localStorage.getItem("key"),
       SOAPACTION: '"urn:schemas-sony-com:service:IRCC:1#X_SendIRCC"',
     };
     const body = `
@@ -471,7 +478,7 @@ export default function IndexPage() {
       </s:Body>
     </s:Envelope>  
   `;
-    Axios.post("http://10.0.0.98/sony/ircc", body, {
+    Axios.post("http://" + localStorage.getItem("addr") + "/sony/ircc", body, {
       headers: headers,
     })
       .then((resp) => {
@@ -515,21 +522,49 @@ export default function IndexPage() {
           cbIsModal={(e) => dispatch({ type: "dismissModal" })}
         >
           {/* Connection Status Bar */}
-          <Connection
-            show={state.connectionInfo.show}
-            cbShow={() =>
+          <div className={`${state.connectionInfo.show ? `inline` : `hidden`}`}>
+            <Connection
+              show={state.connectionInfo.show}
+              cbDismiss={() =>
+                dispatch({
+                  type: "connectionInfo",
+                  payload: { ...state.connectionInfo, show: false },
+                })
+              }
+            />
+          </div>
+          {/* Status Show */}
+          <div
+            onClick={() =>
               dispatch({
                 type: "connectionInfo",
                 payload: { ...state.connectionInfo, show: true },
               })
             }
-            cbDismiss={() =>
-              dispatch({
-                type: "connectionInfo",
-                payload: { ...state.connectionInfo, show: false },
-              })
-            }
-          />
+            className="text-left px-6 pt-5 items-center flex justify-center"
+          >
+            {state.connectionInfo.pass ? (
+              <div className="flex justify-center items-center">
+                <div className="text-xs mr-3">
+                  <FontAwesomeIcon
+                    className="animate-ping-slow text-green-600"
+                    icon={faCircle}
+                  />
+                </div>
+                <div>Connected: {localStorage.getItem("addr")}</div>
+              </div>
+            ) : (
+              <div className="flex justify-center items-center">
+                <div className="text-xs mr-3 inline-block">
+                  <FontAwesomeIcon
+                    className="animate-ping-slow text-red-600"
+                    icon={faCircle}
+                  />
+                </div>
+                <div className="text-red-600">Disconnected...</div>
+              </div>
+            )}
+          </div>
           {/* Top Control Icons */}
           <div className="text-center px-6 pt-6">
             <FontAwesomeIcon
@@ -597,7 +632,11 @@ export default function IndexPage() {
                     <img
                       width={50}
                       height={40}
-                      src="http://10.0.0.98/DIAL/icon/com.sony.dtv.com.google.android.youtube.tv.com.google.android.apps.youtube.tv.activity.ShellActivity.png"
+                      src={
+                        "http://" +
+                        localStorage.getItem("addr") +
+                        "/DIAL/icon/com.sony.dtv.com.google.android.youtube.tv.com.google.android.apps.youtube.tv.activity.ShellActivity.png"
+                      }
                       alt="YouTube Icon"
                     />
                   </Button>
@@ -613,7 +652,11 @@ export default function IndexPage() {
                       className="rounded-md"
                       width={40}
                       height={30}
-                      src="http://10.0.0.98/DIAL/icon/com.sony.dtv.com.amazon.amazonvideo.livingroom.com.amazon.ignition.IgnitionActivity.png"
+                      src={
+                        "http://" +
+                        localStorage.getItem("addr") +
+                        "/DIAL/icon/com.sony.dtv.com.amazon.amazonvideo.livingroom.com.amazon.ignition.IgnitionActivity.png"
+                      }
                       alt="Prime Video Icon"
                     />
                   </Button>
@@ -629,7 +672,11 @@ export default function IndexPage() {
                       className="rounded-md"
                       width={40}
                       height={30}
-                      src="http://10.0.0.98/DIAL/icon/com.sony.dtv.com.netflix.ninja.com.netflix.ninja.MainActivity.png"
+                      src={
+                        "http://" +
+                        localStorage.getItem("addr") +
+                        "/DIAL/icon/com.sony.dtv.com.netflix.ninja.com.netflix.ninja.MainActivity.png"
+                      }
                       alt="Netflix Icon"
                     />
                   </Button>
@@ -645,7 +692,11 @@ export default function IndexPage() {
                       className="rounded-md"
                       width={40}
                       height={30}
-                      src="http://10.0.0.98/DIAL/icon/com.sony.dtv.com.disney.disneyplus.com.bamtechmedia.dominguez.main.MainActivity.png"
+                      src={
+                        "http://" +
+                        localStorage.getItem("addr") +
+                        "/DIAL/icon/com.sony.dtv.com.disney.disneyplus.com.bamtechmedia.dominguez.main.MainActivity.png"
+                      }
                       alt="Disney+ Icon"
                     />
                   </Button>
@@ -661,7 +712,11 @@ export default function IndexPage() {
                       className="rounded-md"
                       width={40}
                       height={30}
-                      src="http://10.0.0.98/DIAL/icon/com.sony.dtv.com.nest.android.com.obsidian.v4.tv.home.TvHomeActivity.png"
+                      src={
+                        "http://" +
+                        localStorage.getItem("addr") +
+                        "/DIAL/icon/com.sony.dtv.com.nest.android.com.obsidian.v4.tv.home.TvHomeActivity.png"
+                      }
                       alt="Nest Icon"
                     />
                   </Button>
