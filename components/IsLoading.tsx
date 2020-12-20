@@ -50,7 +50,10 @@ const IsLoading: React.FunctionComponent<Props> = ({ body }) => {
         <link rel="apple-touch-icon" href="/favicon.ico" />
         <link rel="manifest" href="/manifest.json" />
       </Head>
-      <Connection show={showConnectionField} isDismiss={false} />
+      <Connection
+        show={showConnectionField}
+        cbDismiss={() => setShowConnectionField(false)}
+      />
       <div className="w-screen h-screen flex justify-center items-center transition ease-in-out duration-500 transform dark:bg-black">
         <span className="font-mono text-3xl animate-pulse">
           <span className="cursor-default dark:text-white">
@@ -60,7 +63,7 @@ const IsLoading: React.FunctionComponent<Props> = ({ body }) => {
               <div className="flex flex-col items-center">
                 <div>
                   <div className="font-bold">{body}</div>
-                  <div className="text-sm">
+                  <div className="text-sm text-center">
                     - Make Sure TV's On{" "}
                     <span
                       onClick={() => {
