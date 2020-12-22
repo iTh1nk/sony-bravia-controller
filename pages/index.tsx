@@ -82,6 +82,7 @@ import {
 import { faSourcetree } from "@fortawesome/free-brands-svg-icons";
 import FormTextInput from "../components/TextInput";
 import Connection from "../components/Connection";
+import { Menu, Transition } from "@headlessui/react";
 
 const Title = styled.div(() => [
   tw`text-purple-800 font-semibold text-lg mr-2`,
@@ -275,6 +276,14 @@ export default function IndexPage() {
   const [state, dispatch] = useReducer(statusReducer, initialStates);
 
   useEffect(() => {
+    dispatch({
+      type: "connectionInfo",
+      payload: {
+        ...state.connectionInfo,
+        addr: localStorage.getItem("addr"),
+        key: localStorage.getItem("key"),
+      },
+    });
     Axios.all([
       Axios.post(
         "http://" + localStorage.getItem("addr") + "/sony/avContent",
@@ -321,7 +330,12 @@ export default function IndexPage() {
         Axios.spread((...resp) => {
           dispatch({
             type: "connectionInfo",
-            payload: { ...state.connectionInfo, pass: true },
+            payload: {
+              ...state.connectionInfo,
+              addr: localStorage.getItem("addr"),
+              key: localStorage.getItem("key"),
+              pass: true,
+            },
           });
           dispatch({ type: "sourceList", payload: resp[0].data.result[0] });
           dispatch({ type: "systemInfo", payload: resp[1].data.result });
@@ -347,7 +361,7 @@ export default function IndexPage() {
     dispatch({ type: "isLoading", payload: true });
     dispatch({ type: "loadingBody", payload: "Changing Source..." });
     Axios.post(
-      "http://" + localStorage.getItem("addr") + "/sony/avContent",
+      "http://" + state.connectionInfo.addr + "/sony/avContent",
       {
         method: "setPlayContent",
         version: "1.0",
@@ -358,7 +372,7 @@ export default function IndexPage() {
           },
         ],
       },
-      { headers: { "X-Auth-PSK": localStorage.getItem("key") } }
+      { headers: { "X-Auth-PSK": state.connectionInfo.key } }
     )
       .then((resp) => {
         dispatch({ type: "isLoading", payload: false });
@@ -371,14 +385,14 @@ export default function IndexPage() {
   };
   const muteCtl = () => {
     Axios.post(
-      "http://" + localStorage.getItem("addr") + "/sony/audio",
+      "http://" + state.connectionInfo.addr + "/sony/audio",
       {
         method: "setAudioMute",
         id: 601,
         params: [{ status: !state.volumeInfo[0].mute }],
         version: "1.0",
       },
-      { headers: { "X-Auth-PSK": localStorage.getItem("key") } }
+      { headers: { "X-Auth-PSK": state.connectionInfo.key } }
     )
       .then((resp) => {
         dispatch({ type: "isLoading", payload: false });
@@ -390,7 +404,7 @@ export default function IndexPage() {
   };
   const volumeCtl = (str) => {
     Axios.post(
-      "http://" + localStorage.getItem("addr") + "/sony/audio",
+      "http://" + state.connectionInfo.addr + "/sony/audio",
       {
         method: "setAudioVolume",
         id: 601,
@@ -402,7 +416,7 @@ export default function IndexPage() {
         ],
         version: "1.0",
       },
-      { headers: { "X-Auth-PSK": localStorage.getItem("key") } }
+      { headers: { "X-Auth-PSK": state.connectionInfo.key } }
     )
       .then((resp) => {
         dispatch({ type: "isLoading", payload: false });
@@ -416,14 +430,14 @@ export default function IndexPage() {
   //   dispatch({ type: "isLoading", payload: true });
   //   dispatch({ type: "loadingBody", payload: "Getting Input Status..." });
   //   Axios.post(
-  //     "http://" + localStorage.getItem("addr") + "/sony/avContent",
+  //     "http://" + state.connectionInfo.addr + "/sony/avContent",
   //     {
   //       method: "getCurrentExternalInputsStatus",
   //       id: 105,
   //       params: [],
   //       version: "1.0",
   //     },
-  //     { headers: { "X-Auth-PSK": localStorage.getItem("key") } }
+  //     { headers: { "X-Auth-PSK": state.connectionInfo.key } }
   //   )
   //     .then((resp) => {
   //       dispatch({ type: "isLoading", payload: false });
@@ -439,7 +453,7 @@ export default function IndexPage() {
     dispatch({ type: "isLoading", payload: true });
     dispatch({ type: "loadingBody", payload: `Launching ${appName}` });
     Axios.post(
-      "http://" + localStorage.getItem("addr") + "/sony/appControl",
+      "http://" + state.connectionInfo.addr + "/sony/appControl",
       {
         method: "setActiveApp",
         id: 601,
@@ -451,7 +465,7 @@ export default function IndexPage() {
         ],
         version: "1.0",
       },
-      { headers: { "X-Auth-PSK": localStorage.getItem("key") } }
+      { headers: { "X-Auth-PSK": state.connectionInfo.key } }
     )
       .then((resp) => {
         console.log(resp.data.result[0]);
@@ -466,7 +480,7 @@ export default function IndexPage() {
   const funcIRCC = (code) => {
     const headers = {
       "Content-Type": "text/xml; charset=UTF-8",
-      "X-Auth-PSK": localStorage.getItem("key"),
+      "X-Auth-PSK": state.connectionInfo.key,
       SOAPACTION: '"urn:schemas-sony-com:service:IRCC:1#X_SendIRCC"',
     };
     const body = `
@@ -480,7 +494,7 @@ export default function IndexPage() {
       </s:Body>
     </s:Envelope>  
   `;
-    Axios.post("http://" + localStorage.getItem("addr") + "/sony/ircc", body, {
+    Axios.post("http://" + state.connectionInfo.addr + "/sony/ircc", body, {
       headers: headers,
     })
       .then((resp) => {
@@ -553,7 +567,7 @@ export default function IndexPage() {
                     icon={faCircle}
                   />
                 </div>
-                <div>Connected: {localStorage.getItem("addr")}</div>
+                <div>Connected: {state.connectionInfo.addr}</div>
               </div>
             ) : (
               <div className="flex justify-center items-center">
@@ -636,7 +650,7 @@ export default function IndexPage() {
                       height={40}
                       src={
                         "http://" +
-                        localStorage.getItem("addr") +
+                        state.connectionInfo.addr +
                         "/DIAL/icon/com.sony.dtv.com.google.android.youtube.tv.com.google.android.apps.youtube.tv.activity.ShellActivity.png"
                       }
                       alt="YouTube Icon"
@@ -656,7 +670,7 @@ export default function IndexPage() {
                       height={30}
                       src={
                         "http://" +
-                        localStorage.getItem("addr") +
+                        state.connectionInfo.addr +
                         "/DIAL/icon/com.sony.dtv.com.amazon.amazonvideo.livingroom.com.amazon.ignition.IgnitionActivity.png"
                       }
                       alt="Prime Video Icon"
@@ -676,7 +690,7 @@ export default function IndexPage() {
                       height={30}
                       src={
                         "http://" +
-                        localStorage.getItem("addr") +
+                        state.connectionInfo.addr +
                         "/DIAL/icon/com.sony.dtv.com.netflix.ninja.com.netflix.ninja.MainActivity.png"
                       }
                       alt="Netflix Icon"
@@ -696,7 +710,7 @@ export default function IndexPage() {
                       height={30}
                       src={
                         "http://" +
-                        localStorage.getItem("addr") +
+                        state.connectionInfo.addr +
                         "/DIAL/icon/com.sony.dtv.com.disney.disneyplus.com.bamtechmedia.dominguez.main.MainActivity.png"
                       }
                       alt="Disney+ Icon"
@@ -716,7 +730,7 @@ export default function IndexPage() {
                       height={30}
                       src={
                         "http://" +
-                        localStorage.getItem("addr") +
+                        state.connectionInfo.addr +
                         "/DIAL/icon/com.sony.dtv.com.nest.android.com.obsidian.v4.tv.home.TvHomeActivity.png"
                       }
                       alt="Nest Icon"
@@ -894,25 +908,41 @@ export default function IndexPage() {
                     System Info
                   </span>
                 </Title>
-                {state.showSysInfo
-                  ? Object.keys(state.systemInfo[0])?.map((item, idx) => (
-                      <div key={idx}>
-                        <SubTitleSystemInfo key={idx}>
-                          {item.toUpperCase()}:{" "}
-                        </SubTitleSystemInfo>
-                        {Object.values(state.systemInfo[0])?.map(
-                          (itemSub, idxSub) =>
-                            idx !== idxSub ? null : (
-                              <div key={idxSub} className="inline-block">
-                                <SubTitleSystemInfo>
-                                  <span className="underline">{itemSub}</span>
-                                </SubTitleSystemInfo>
-                              </div>
-                            )
-                        )}
-                      </div>
-                    ))
-                  : null}
+                <Menu>
+                  <Transition
+                    show={state.showSysInfo}
+                    enter="transition ease-out duration-500"
+                    enterFrom="opacity-0 -translate-y-1 transform"
+                    enterTo="opacity-100 translate-y-0 transform"
+                    leave="transition ease-in duration-100"
+                    leaveFrom="opacity-100 translate-y-0 transform"
+                    leaveTo="opacity-0 -translate-y-1 transform"
+                  >
+                    <div className="mt-3">
+                      {state.showSysInfo
+                        ? Object.keys(state.systemInfo[0])?.map((item, idx) => (
+                            <div key={idx}>
+                              <SubTitleSystemInfo>
+                                {item.toUpperCase()}:
+                              </SubTitleSystemInfo>
+                              {Object.values(state.systemInfo[0])?.map(
+                                (itemSub, idxSub) =>
+                                  idx !== idxSub ? null : (
+                                    <div key={idxSub} className="inline-block">
+                                      <SubTitleSystemInfo>
+                                        <span className="underline">
+                                          {itemSub}
+                                        </span>
+                                      </SubTitleSystemInfo>
+                                    </div>
+                                  )
+                              )}
+                            </div>
+                          ))
+                        : null}
+                    </div>
+                  </Transition>
+                </Menu>
               </div>
             </div>
           </div>
