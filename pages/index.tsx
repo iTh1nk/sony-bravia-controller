@@ -560,10 +560,10 @@ export default function IndexPage() {
             className="text-left px-6 pt-2 items-center flex justify-center"
           >
             {state.connectionInfo.pass ? (
-              <div className="flex justify-center items-center">
+              <div className="flex justify-center items-center text-xs text-green-600">
                 <div className="text-xs mr-3">
                   <FontAwesomeIcon
-                    className="animate-ping-slow text-green-600"
+                    className="animate-ping-slow"
                     icon={faCircle}
                   />
                 </div>
@@ -622,7 +622,7 @@ export default function IndexPage() {
                 {/* <Title>- Source</Title> */}
               </div>
               <div className="">
-                <div className="flex items-center justify-center">
+                <div className="flex items-center justify-center text-sm">
                   <Button onClick={() => inputCtl(1)}>
                     <SubTitle>HDMI1</SubTitle>
                   </Button>
@@ -915,8 +915,8 @@ export default function IndexPage() {
                     enterFrom="opacity-0 -translate-y-1 transform"
                     enterTo="opacity-100 translate-y-0 transform"
                     leave="transition ease-in duration-100"
-                    leaveFrom="opacity-100 translate-y-0 transform"
-                    leaveTo="opacity-0 -translate-y-1 transform"
+                    leaveFrom="opacity-100 translate-y-0 transform duration-300"
+                    leaveTo="opacity-0 -translate-y-1 transform duration-300"
                   >
                     <div className="mt-3">
                       {state.showSysInfo
