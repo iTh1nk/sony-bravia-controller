@@ -75,8 +75,19 @@ const IsLoading: React.FunctionComponent<Props> = ({ body }) => {
                     </span>
                   </div>
                 </div>
-                <div onClick={() => setShowConnectionField(true)}>
+                <div
+                  onClick={() => setShowConnectionField(true)}
+                  className="flex items-center"
+                >
                   <FontAwesomeIcon className="m-3" icon={faKeyboard} />
+                  <span
+                    onClick={() => {
+                      window.location.reload();
+                    }}
+                    className="ml-6 text-sm"
+                  >
+                    <FontAwesomeIcon icon={faSync} />
+                  </span>
                 </div>
               </div>
             ) : (

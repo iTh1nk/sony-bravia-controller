@@ -905,7 +905,7 @@ export default function IndexPage() {
                     }}
                     className="cursor-pointer border-b border-purple-800"
                   >
-                    System Info
+                    TV Info
                   </span>
                 </Title>
                 <Menu>
