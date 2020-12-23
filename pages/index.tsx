@@ -896,54 +896,53 @@ export default function IndexPage() {
               </div>
             </div>
             {/* System Info */}
-            <div className="mt-5">
-              <div className="mb-2">
-                <Title>
-                  <span
-                    onClick={() => {
-                      dispatch({ type: "showSysInfo" });
-                    }}
-                    className="cursor-pointer border-b border-purple-800"
-                  >
-                    TV Info
-                  </span>
-                </Title>
-                <Menu>
-                  <Transition
-                    show={state.showSysInfo}
-                    enter="transition ease-out duration-500"
-                    enterFrom="opacity-0 -translate-y-1 transform"
-                    enterTo="opacity-100 translate-y-0 transform"
-                    leave="transition ease-in duration-100"
-                    leaveFrom="opacity-100 translate-y-0 transform duration-300"
-                    leaveTo="opacity-0 -translate-y-1 transform duration-300"
-                  >
-                    <div className="mt-3">
-                      {state.showSysInfo
-                        ? Object.keys(state.systemInfo[0])?.map((item, idx) => (
-                            <div key={idx}>
-                              <SubTitleSystemInfo>
-                                {item.toUpperCase()}:
-                              </SubTitleSystemInfo>
-                              {Object.values(state.systemInfo[0])?.map(
-                                (itemSub, idxSub) =>
-                                  idx !== idxSub ? null : (
-                                    <div key={idxSub} className="inline-block">
-                                      <SubTitleSystemInfo>
-                                        <span className="underline">
-                                          {itemSub}
-                                        </span>
-                                      </SubTitleSystemInfo>
-                                    </div>
-                                  )
-                              )}
-                            </div>
-                          ))
-                        : null}
-                    </div>
-                  </Transition>
-                </Menu>
-              </div>
+            <div className="mt-5 mb-2 text-left">
+              <Menu>
+                {({ open }) => (
+                  <>
+                    <Menu.Button>
+                      <Title>
+                        <span
+                          onClick={() => {
+                            dispatch({ type: "showSysInfo" });
+                          }}
+                          className="cursor-pointer border-b border-purple-800"
+                        >
+                          TV Info
+                        </span>
+                      </Title>
+                    </Menu.Button>
+
+                    <Transition
+                      show={open}
+                      enter="transition ease-out duration-300"
+                      enterFrom="transform opacity-0 -translate-y-2"
+                      enterTo="transform opacity-100 translate-y-0"
+                      leave="transition ease-in duration-100"
+                      leaveFrom="transform opacity-100 translate-y-0"
+                      leaveTo="transform opacity-0 -translate-y-1"
+                    >
+                      {Object.keys(state.systemInfo[0])?.map((item, idx) => (
+                        <div key={idx}>
+                          <SubTitleSystemInfo>
+                            {item.toUpperCase()}:
+                          </SubTitleSystemInfo>
+                          {Object.values(state.systemInfo[0])?.map(
+                            (itemSub, idxSub) =>
+                              idx !== idxSub ? null : (
+                                <div key={idxSub} className="inline-block">
+                                  <SubTitleSystemInfo>
+                                    <span className="underline">{itemSub}</span>
+                                  </SubTitleSystemInfo>
+                                </div>
+                              )
+                          )}
+                        </div>
+                      ))}
+                    </Transition>
+                  </>
+                )}
+              </Menu>
             </div>
           </div>
         </Container>
