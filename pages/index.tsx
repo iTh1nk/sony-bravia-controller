@@ -276,6 +276,8 @@ export default function IndexPage() {
   const [state, dispatch] = useReducer(statusReducer, initialStates);
 
   useEffect(() => {
+    // const testFocus = (str) => console.log(str)
+    // window.addEventListener("focus", () => testFocus("Focus"));
     dispatch({
       type: "connectionInfo",
       payload: {
@@ -355,11 +357,12 @@ export default function IndexPage() {
         });
         console.log(errors);
       });
+    // return () => window.removeEventListener("focus", () => testFocus("Left"))
   }, [state.refresh]);
 
   const inputCtl = (port) => {
-    dispatch({ type: "isLoading", payload: true });
-    dispatch({ type: "loadingBody", payload: "Changing Source..." });
+    // dispatch({ type: "isLoading", payload: true });
+    // dispatch({ type: "loadingBody", payload: "Changing Source..." });
     Axios.post(
       "http://" + state.connectionInfo.addr + "/sony/avContent",
       {
