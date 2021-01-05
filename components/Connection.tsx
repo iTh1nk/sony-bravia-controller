@@ -1,10 +1,5 @@
-import {
-  faCircle,
-  faCircleNotch,
-  faSpinner,
-} from "@fortawesome/free-solid-svg-icons";
+import { faCircleNotch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Axios from "axios";
 import React, { useState } from "react";
 
 interface Props {
